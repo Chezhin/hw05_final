@@ -25,6 +25,7 @@ class PostsURLTests(TestCase):
             group=cls.group
         )
         cls.index_url = reverse('posts:index')
+        cls.follow_url = reverse('posts:follow_index')
         cls.group_url = reverse(
             'posts:group_list',
             kwargs={'slug': cls.group.slug}
@@ -52,7 +53,8 @@ class PostsURLTests(TestCase):
         )
         cls.private_urls = (
             (cls.post_create_url, 'posts/post_create.html'),
-            (cls.post_edit_url, 'posts/post_create.html')
+            (cls.post_edit_url, 'posts/post_create.html'),
+            (cls.follow_url, 'posts/follow.html')
         )
 
     def setUp(self):
@@ -62,7 +64,7 @@ class PostsURLTests(TestCase):
 
     def test_public_urls_work(self):
         """Публичные URLs работают."""
-        for url, _ in PostsURLTests.public_urls:
+        for url in PostsURLTests.public_urls:
             with self.subTest(url=url):
                 response = self.unauthorized_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -96,9 +98,10 @@ class PostsURLTests(TestCase):
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_unexisting_page(self):
-        """При запросе несуществующего URL будет ошибка."""
+        """При запросе несуществующего URL используется правильный шаблон."""
         response = self.unauthorized_client.get('/unexisting_page/')
-        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        template = 'core/404.html'
+        self.assertTemplateUsed(response, template)
 
     def test_public_urls_uses_correct_template(self):
         """Публичные URLs используют правильные шаблоны."""

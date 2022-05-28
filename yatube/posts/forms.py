@@ -3,8 +3,6 @@ from django import forms
 from .models import Comment, Post
 
 
-# тут разве не в правильном порядке импорты?
-# я думал в django как раз стандартная библиотека
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post

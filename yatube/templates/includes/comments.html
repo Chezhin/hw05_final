@@ -19,12 +19,12 @@
   <div class="media mb-4">
     <div class="media-body">
       <h5 class="mt-0">
-        <a href="{% url 'posts:profile' comment.author.username %}">
+        <a href="{% url 'posts:profile' comment.author %}">
           {{ comment.author.username }}
         </a>
       </h5>
         <p>
-         {{ comment.text }}
+         {{ comment.text|linebreaksbr }}
         </p>
       </div>
     </div>

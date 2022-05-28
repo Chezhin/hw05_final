@@ -31,7 +31,13 @@ class TestPosts(TestCase):
             author=cls.user,
             group=cls.group
         )
+        cls.comment = Comment.objects.create(
+            post = cls.post,
+            author = cls.user,
+            text = 'test comment'
+        )
         cls.index_url = reverse('posts:index')
+        cls.follow_url = reverse('posts:follow_index')
         cls.group_url = reverse(
             'posts:group_list',
             kwargs={'slug': cls.group.slug}
@@ -56,7 +62,8 @@ class TestPosts(TestCase):
             (cls.profile_url, 'posts/profile.html'),
             (cls.post_detail_url, 'posts/post_detail.html'),
             (cls.post_create_url, 'posts/post_create.html'),
-            (cls.post_edit_url, 'posts/post_create.html')
+            (cls.post_edit_url, 'posts/post_create.html'),
+            (cls.follow_url, 'posts/follow.html')
         )
 
     def setUp(self):
@@ -92,7 +99,9 @@ class TestPosts(TestCase):
                 reverse('posts:group_list', kwargs={'slug': 'test-group'})
             )
         )
+        group = response.context['group']
 
+        self.assertEqual(group.slug, 'test-group')
         self.assert_content(response.context)
 
     def test_post_shows_up_in_its_group(self):
@@ -122,6 +131,11 @@ class TestPosts(TestCase):
                     kwargs={'username': TestPosts.user.username})
             )
         )
+        author = response.context['author']
+        following = response.context['following']
+
+        self.assertIn(following, response.context)
+        self.assertEqual(author.username, TestPosts.user.username)
         self.assert_content(response.context)
 
     def test_post_detail_page_context_is_correct(self):
@@ -135,18 +149,29 @@ class TestPosts(TestCase):
         )
 
         post = response.context['post']
+        comment = response.context['comments'][0]
+        form_field = {
+            'text': forms.fields.CharField,
+        }
 
+        self.assertEqual(comment.text, TestPosts.comment.text)
         self.assertEqual(post.author, TestPosts.user)
         self.assertEqual(post.pub_date, TestPosts.post.pub_date)
         self.assertEqual(post.text, TestPosts.post.text)
         self.assertEqual(post.group, TestPosts.post.group)
+        
+        for value, expected in form_field.items():
+            with self.subTest(value=value):
+                field = response.context.get('form').fields.get(value)
+                self.assertIsInstance(field, expected)
 
     def test_post_create_page_context_is_correct(self):
         """Шаблон post_create сформирован с правильным контекстом."""
         response = self.authorized_client.get(reverse('posts:post_create'))
         form_fields = {
             'text': forms.fields.CharField,
-            'group': forms.models.ModelChoiceField
+            'group': forms.models.ModelChoiceField,
+            'image': forms.ImageField,
         }
 
         for value, expected in form_fields.items():
@@ -160,7 +185,8 @@ class TestPosts(TestCase):
             reverse('posts:post_edit', kwargs={'post_id': TestPosts.post.pk}))
         form_fields = {
             'text': forms.fields.CharField,
-            'group': forms.models.ModelChoiceField
+            'group': forms.models.ModelChoiceField,
+            'image': forms.ImageField,
         }
 
         for value, expected in form_fields.items():
@@ -205,11 +231,7 @@ class TestPosts(TestCase):
     def test_comment_shows_up_in_post_page(self):
         """Комментарий появляется на странице поста."""
         post = TestPosts.post
-        comment = Comment.objects.create(
-            post=post,
-            author=TestPosts.user,
-            text='my comment'
-        )
+        comment = TestPosts.comment
         response = (
             self.authorized_client.get(
                 reverse(
@@ -275,7 +297,7 @@ class FollowTests(TestCase):
         self.assertEqual(Follow.objects.all().count(), 0)
 
     def test_subscription_feed(self):
-        """Запись появляется только в ленте подписчиков."""
+        """Запись не появляется в ленте тех, кто не подписан."""
         Follow.objects.create(user=self.user_follower,
                               author=self.user_following)
         response = self.auth_client_follower.get(

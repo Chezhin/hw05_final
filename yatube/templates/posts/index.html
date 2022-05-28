@@ -3,13 +3,12 @@
   Последние обновления на сайте
 {% endblock %}
 {% block content %}
-  {% include 'includes/switcher.html' %}
   <div class="container py-5">
+    {% include 'includes/switcher.html' %}
     <h1> Главная страница </h1>    
     {% for post in page_obj %} 
       {% include 'includes/post_for_cycle.html' %}
     {% endfor %}
-
     {% include 'includes/paginator.html' %}
   </div> 
 {% endblock %}

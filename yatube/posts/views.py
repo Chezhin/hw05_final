@@ -34,13 +34,9 @@ def group_list(request, slug) -> HttpResponse:
 
 def profile(request, username) -> HttpResponse:
     author = get_object_or_404(User, username=username)
-    posts = author.posts.select_related('author')
-    if request.user.is_authenticated:
-        following = Follow.objects.filter(
-            user=request.user, author=author
-        ).exists()
-    else:
-        following = False
+    posts = author.posts.select_related('author', 'group')
+    user = request.user
+    following = user.is_authenticated and author.following.exists()
     context = {
         'following': following,
         'author': author,
@@ -51,7 +47,7 @@ def profile(request, username) -> HttpResponse:
 
 def post_detail(request, post_id) -> HttpResponse:
     post = get_object_or_404(Post, pk=post_id)
-    form = CommentForm(request.POST or None, files=request.FILES or None)
+    form = CommentForm(files=request.FILES or None)
     comments = post.comments.all()
     context = {
         'post': post,
@@ -119,9 +115,8 @@ def follow_index(request):
 def profile_follow(request, username):
     user = request.user
     author = User.objects.get(username=username)
-    is_follower = Follow.objects.filter(user=user, author=author)
-    if user != author and not is_follower.exists():
-        Follow.objects.create(user=user, author=author)
+    if author != user:
+        Follow.objects.get_or_create(user=user, author=author)
     return redirect('posts:profile', username=username)
 
 
