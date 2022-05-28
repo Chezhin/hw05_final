@@ -8,7 +8,7 @@ def page_not_found(request, exception):
         request,
         'core/404.html',
         {'path': request.path},
-        HTTPStatus.NOT_FOUND
+        status=404
     )
 
 
