@@ -7,8 +7,6 @@ User = get_user_model()
 class PostBase(models.Model):
     class Meta:
         abstract = True
-
-
     pub_date = models.DateTimeField("дата публикации", auto_now_add=True)
 
 
@@ -80,6 +78,7 @@ class Follow(models.Model):
         on_delete=models.CASCADE,
         related_name="following"
     )
+
 
 class Meta:
     unique_together = ['user', 'author']

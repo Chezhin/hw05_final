@@ -32,9 +32,9 @@ class TestPosts(TestCase):
             group=cls.group
         )
         cls.comment = Comment.objects.create(
-            post = cls.post,
-            author = cls.user,
-            text = 'test comment'
+            post=cls.post,
+            author=cls.user,
+            text='test comment'
         )
         cls.index_url = reverse('posts:index')
         cls.follow_url = reverse('posts:follow_index')
@@ -159,7 +159,7 @@ class TestPosts(TestCase):
         self.assertEqual(post.pub_date, TestPosts.post.pub_date)
         self.assertEqual(post.text, TestPosts.post.text)
         self.assertEqual(post.group, TestPosts.post.group)
-        
+
         for value, expected in form_field.items():
             with self.subTest(value=value):
                 field = response.context.get('form').fields.get(value)

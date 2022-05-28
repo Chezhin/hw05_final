@@ -136,11 +136,11 @@ class PostFormTests(TestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
         # self.assertTrue(
-            # Post.objects.filter(
-                # text='new posto',
-                # group= PostFormTests.group.id,
-                # image='posts/small.gif'
-            # ).exists()
+        # Post.objects.filter(
+        # text='new posto',
+        # group= PostFormTests.group.id,
+        # image='posts/small.gif'
+        # ).exists()
         # )
         self.assertEqual(Post.objects.count(), posts_count + 1)
 
@@ -160,7 +160,7 @@ class PostFormTests(TestCase):
             data=comment_data,
         )
         self.assertEqual(response.status_code, HTTPStatus.FOUND)
-        self.assertEqual(Comment.objects.count(), comments_count +1)
+        self.assertEqual(Comment.objects.count(), comments_count + 1)
 
     def test_unauthorized_user_cant_create_comment(self):
         """Неавторизованный юзер не может создать комментарий."""
