@@ -62,13 +62,6 @@ class PostsURLTests(TestCase):
         self.authorized_client = Client()
         self.authorized_client.force_login(PostsURLTests.user)
 
-    def test_public_urls_work(self):
-        """Публичные URLs работают."""
-        for url in PostsURLTests.public_urls:
-            with self.subTest(url=url):
-                response = self.authorized_client.get(url)
-                self.assertEqual(response.status_code, HTTPStatus.OK)
-
     def test_unauthorized_user_cannot_access_private_urls(self):
         """Неавторизированный юзер не может создавать, редактировать посты."""
         for url, _ in PostsURLTests.private_urls:
