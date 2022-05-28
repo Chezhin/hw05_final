@@ -66,7 +66,7 @@ class PostsURLTests(TestCase):
         """Публичные URLs работают."""
         for url in PostsURLTests.public_urls:
             with self.subTest(url=url):
-                response = self.unauthorized_client.get(url)
+                response = self.authorized_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_unauthorized_user_cannot_access_private_urls(self):
