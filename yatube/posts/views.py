@@ -35,8 +35,12 @@ def group_list(request, slug) -> HttpResponse:
 def profile(request, username) -> HttpResponse:
     author = get_object_or_404(User, username=username)
     posts = author.posts.select_related('author', 'group')
-    user = request.user
-    following = user.is_authenticated and author.following.exists()
+    if request.user.is_authenticated:
+        following = Follow.objects.filter(
+            user=request.user, author=author
+        ).exists()
+    else:
+        following = False
     context = {
         'following': following,
         'author': author,
@@ -47,7 +51,7 @@ def profile(request, username) -> HttpResponse:
 
 def post_detail(request, post_id) -> HttpResponse:
     post = get_object_or_404(Post, pk=post_id)
-    form = CommentForm(files=request.FILES or None)
+    form = CommentForm()
     comments = post.comments.all()
     context = {
         'post': post,
@@ -60,7 +64,7 @@ def post_detail(request, post_id) -> HttpResponse:
 @login_required
 def post_create(request) -> HttpResponse:
     if request.method == 'POST':
-        form = PostForm(request.POST)
+        form = PostForm(request.POST, files=request.FILES)
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user

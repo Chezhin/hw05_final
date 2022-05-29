@@ -62,9 +62,27 @@ class PostsURLTests(TestCase):
         self.authorized_client = Client()
         self.authorized_client.force_login(PostsURLTests.user)
 
+    def test_public_urls_work(self):
+        """Публичные URLs работают."""
+        public_urls = (
+            PostsURLTests.index_url,
+            PostsURLTests.group_url,
+            PostsURLTests.profile_url,
+            PostsURLTests.post_detail_url
+        )
+        for url in public_urls:
+            with self.subTest(url=url):
+                response = self.unauthorized_client.get(url)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
+
     def test_unauthorized_user_cannot_access_private_urls(self):
         """Неавторизированный юзер не может создавать, редактировать посты."""
-        for url, _ in PostsURLTests.private_urls:
+        private_urls = (
+            PostsURLTests.post_create_url,
+            PostsURLTests.post_edit_url,
+            PostsURLTests.follow_url
+        )
+        for url in private_urls:
             with self.subTest(url=url):
                 response = self.unauthorized_client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.FOUND)
@@ -95,6 +113,7 @@ class PostsURLTests(TestCase):
         response = self.unauthorized_client.get('/unexisting_page/')
         template = 'core/404.html'
         self.assertTemplateUsed(response, template)
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
 
     def test_public_urls_uses_correct_template(self):
         """Публичные URLs используют правильные шаблоны."""

@@ -5,9 +5,11 @@ User = get_user_model()
 
 
 class PostBase(models.Model):
+    pub_date = models.DateTimeField("дата публикации", auto_now_add=True)
+
     class Meta:
         abstract = True
-    pub_date = models.DateTimeField("дата публикации", auto_now_add=True)
+
 
 
 class Group(models.Model):
@@ -80,5 +82,5 @@ class Follow(models.Model):
     )
 
 
-class Meta:
-    unique_together = ['user', 'author']
+    class Meta:
+        unique_together = ['user', 'author']

@@ -102,6 +102,8 @@ class TestPosts(TestCase):
         group = response.context['group']
 
         self.assertEqual(group.slug, 'test-group')
+        self.assertEqual(group.description, 'test description')
+        self.assertEqual(group.title, 'Test group')
         self.assert_content(response.context)
 
     def test_post_shows_up_in_its_group(self):
@@ -135,7 +137,7 @@ class TestPosts(TestCase):
         following = response.context['following']
 
         self.assertIn(following, response.context)
-        self.assertEqual(author.username, TestPosts.user.username)
+        self.assertEqual(author, TestPosts.user)
         self.assert_content(response.context)
 
     def test_post_detail_page_context_is_correct(self):
@@ -155,6 +157,8 @@ class TestPosts(TestCase):
         }
 
         self.assertEqual(comment.text, TestPosts.comment.text)
+        self.assertEqual(comment.post, post)
+        self.assertEqual(comment.author, TestPosts.user)
         self.assertEqual(post.author, TestPosts.user)
         self.assertEqual(post.pub_date, TestPosts.post.pub_date)
         self.assertEqual(post.text, TestPosts.post.text)
