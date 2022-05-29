@@ -111,7 +111,7 @@ class PostFormTests(TestCase):
                 group=PostFormTests.group,
                 author=PostFormTests.user
             ).exists()
-        ) 
+        )
         self.assertEqual(Post.objects.count(), posts_count + 1)
 
     def test_authorized_user_can_create_comment(self):
