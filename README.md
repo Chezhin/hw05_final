@@ -1,3 +1,18 @@
-# hw05_final
+# Социальная сеть YaTube для публикации постов и картинок
 
-[![CI](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml)
+### Описание
+Блог, пользователи которого могут публиковать посты, прикреплять к ним изображения, добавлять их в тематические группы. Также реализована возможность оставлять и удалять комментарии к постам. Пользователи могут подписываться друг на друга.
+Проект реализован на MVT-архитектуре, имеется система регистрации новых пользователей. Есть кэширование страниц.
+
+### Технологии
+- Python 3.7
+- Django 2.2.16
+- SQLite3
+- CSS
+- HTML
+- Pytest
+
+### Сайт доступен здесь
+[Адрес](http://regularsite.pythonanywhere.com/)
+
+### Автор: Руслан Чежин.
